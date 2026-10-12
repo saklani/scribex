@@ -6,7 +6,10 @@ driven from Rust. No TeX Live installation or server is needed.
 
 ## Features
 
-- Open, edit, save (⌘S), save as (⇧⌘S) and export to PDF (⌘E).
+- A standard Mac document app: one window per .tex file, with Save, Save As,
+  Revert, Rename, Auto Save, Versions and Open Recent from macOS itself, and
+  export to PDF (⌘E).
+- A welcome window with the system's recent documents and starter templates.
 - Live rebuild 600 ms after you stop typing. A rebuild takes about 700 ms once
   resources are cached.
 - Section outline, and TeX log errors that jump to the offending line. Some
@@ -147,15 +150,24 @@ no Screen Recording permission; see `DebugScript.swift`.
 | `engine/src/bin/scribex-typeset.rs` | The worker binary the app launches for each build |
 | `macos/ScribeX/` | The app target: entry point and icon |
 | `macos/ScribeXKit/Sources/ScribeXCore/Typesetter.swift` | Runs builds in the worker, one at a time; first-run download |
-| `macos/ScribeXKit/Sources/ScribeXCore/DocumentFiles.swift` | Save and export, the only writes to the user's files |
-| `macos/ScribeXKit/Sources/ScribeXCore/TexLog.swift` | Parses the TeX log into issues and the press log |
-| `macos/ScribeXKit/Sources/ScribeXCore/Latex.swift` | Outline, document counts, bibliography keys |
-| `macos/ScribeXKit/Sources/ScribeXCore/Snippets.swift` | Plain-English → LaTeX snippet matcher |
-| `macos/ScribeXKit/Sources/ScribeXUI/AppModel.swift` | App state, builds, file handling, autosave |
-| `macos/ScribeXKit/Sources/ScribeXUI/AppShell.swift` | The window, the unsaved-changes guard, the menu bar |
-| `macos/ScribeXKit/Sources/ScribeXUI/SourceEditor.swift` | STTextView setup, LaTeX colouring, brackets, completion |
-| `macos/ScribeXKit/Sources/ScribeXUI/PreviewView.swift` | PDFKit preview; keeps scroll position across rebuilds |
-| `macos/ScribeXKit/Sources/ScribeXUI/Theme.swift` | Design tokens, fonts and controls |
+| `macos/ScribeXKit/Sources/ScribeXCore/DocumentFiles.swift` | Export, and the source written alongside an export |
+| `macos/ScribeXKit/Sources/ScribeXCore/Latex/Issues.swift` | Turns the TeX log into issues, with plain-English titles and fixes |
+| `macos/ScribeXKit/Sources/ScribeXCore/Latex/Outline.swift` | Headings with LaTeX's numbering, document counts, the title |
+| `macos/ScribeXKit/Sources/ScribeXCore/Latex/Bibliography.swift` | Cited keys and the entries in .bib files |
+| `macos/ScribeXKit/Sources/ScribeXCore/Latex/Completions.swift` | The command and environment names the editor completes |
+| `macos/ScribeXKit/Sources/ScribeXCore/Latex/Highlighting.swift` | Tokens for syntax colouring, line by line |
+| `macos/ScribeXKit/Sources/ScribeXCore/Content/Snippets.swift` | Plain-English → LaTeX snippet matcher |
+| `macos/ScribeXKit/Sources/ScribeXCore/Content/Templates.swift` | Starter templates; their LaTeX is in `Resources/Templates` |
+| `macos/ScribeXKit/Sources/ScribeXUI/Editor/TexDocument.swift` | The .tex document type; the document system does the file handling |
+| `macos/ScribeXKit/Sources/ScribeXUI/App/Engine.swift` | Shared by all windows: the typesetter and its download cache |
+| `macos/ScribeXKit/Sources/ScribeXUI/Editor/Session.swift` | One window's model: the document, its editor, and edits routed to the two below |
+| `macos/ScribeXKit/Sources/ScribeXUI/Editor/Typesetting.swift` | Builds as you type, the preview, issues, missing files, Fetch, export |
+| `macos/ScribeXKit/Sources/ScribeXUI/Editor/Outline.swift` | The headings and counts the sidebar shows |
+| `macos/ScribeXKit/Sources/ScribeXUI/App/Commands.swift` | Every command, defined once for the menu bar and the ⌘K palette |
+| `macos/ScribeXKit/Sources/ScribeXUI/App/MenuBar.swift` | Lays the commands out in the menus, acting on the front window through `@FocusedValue` |
+| `macos/ScribeXKit/Sources/ScribeXUI/Editor/Editor.swift` | STTextView setup, LaTeX colouring, brackets, completion |
+| `macos/ScribeXKit/Sources/ScribeXUI/Editor/Renderer.swift` | The preview column: PDFKit pages that keep their scroll position across rebuilds, zoom, Export |
+| `macos/ScribeXKit/Sources/ScribeXUI/App/Style.swift` | The book look over native controls: colours, fonts, `scribeStyle()` |
 | `macos/licenses/` | Third-party licences, shipped inside the app |
 
 ## Licences
