@@ -99,7 +99,6 @@ public final class Engine {
     }
 }
 
-#if DEBUG
 extension Engine {
     /// An engine held in one setup state, for previews.
     static func preview(_ cache: CacheState, files: Int = 0, error: String? = nil) -> Engine {
@@ -109,4 +108,3 @@ extension Engine {
         return engine
     }
 }
-#endif

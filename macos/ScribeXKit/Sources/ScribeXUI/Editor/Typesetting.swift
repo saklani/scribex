@@ -224,22 +224,29 @@ final class Typesetting {
 
     /// After the system's save panel has written the PDF to `url`.
     func exported(_ pdf: Data, to url: URL, sourceAlongside: Bool) {
+        status = "Exported \(pdf.count / 1024) KB to \(url.lastPathComponent)"
+        guard sourceAlongside else { return }
+        let copy = url.deletingPathExtension().appendingPathExtension("tex")
         do {
-            if sourceAlongside {
-                try Data(source.utf8).write(to: url.deletingPathExtension().appendingPathExtension("tex"))
+            // Exported beside the document itself, its source is already there:
+            // writing the buffer over it would go behind the document system's back.
+            if copy.resolvingSymlinksInPath() != fileURL?.resolvingSymlinksInPath() {
+                // The save panel asked about replacing the PDF only, so any
+                // other .tex of that name is not ours to replace.
+                try Data(source.utf8).write(to: copy, options: .withoutOverwriting)
             }
-            status = "Exported \(pdf.count / 1024) KB to \(url.lastPathComponent)" + (sourceAlongside ? " (with source)" : "")
+            status += " (with source)"
+        } catch CocoaError.fileWriteFileExists {
+            status = "Exported the PDF, but not the source: \(copy.lastPathComponent) is already there"
         } catch {
             status = "Exported the PDF, but not the source: \(error.localizedDescription)"
         }
     }
 }
 
-#if DEBUG
 extension Typesetting {
     /// Issues to show in a preview, where nothing is typeset.
     func showForPreview(_ issues: [Diagnostic]) {
         diags = issues
     }
 }
-#endif

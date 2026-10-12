@@ -71,7 +71,6 @@ public final class Session {
     }
 }
 
-#if DEBUG
 extension Session {
     /// A window's worth of state for previews: the article template, and any
     /// issues to show. Nothing is typeset.
@@ -85,5 +84,3 @@ extension Session {
 extension Engine {
     static let preview = Engine(worker: URL(filePath: "/usr/bin/false"))
 }
-#endif
-

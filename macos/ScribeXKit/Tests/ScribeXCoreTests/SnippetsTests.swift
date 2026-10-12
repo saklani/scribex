@@ -30,6 +30,14 @@ struct SnippetsTests {
         #expect(suggest("bold", hasSelection: true)[0].title == "Set the selection in bold")
     }
 
+    @Test func aSelectionIsWrappedWhereTheSnippetHasRoom() {
+        #expect(insertion(of: "\\textbf{\(caret)}") == ("\\textbf{}", 8))
+        #expect(insertion(of: "\\textbf{\(caret)}", over: "très") == ("\\textbf{très}", 12))
+        // Nothing follows the marker, or there is none: the selection is replaced.
+        #expect(insertion(of: "\\newpage\(caret)", over: "gone") == ("\\newpage", 8))
+        #expect(insertion(of: "a & b", over: "gone") == ("a & b", 5))
+    }
+
     @Test func selectionToTableReadsCommasAndTabs() {
         #expect(selectionToTable("a, b\nc") == "\\begin{tabular}{ll}\n  \\hline\n  a & b \\\\\n  c &  \\\\\n  \\hline\n\\end{tabular}")
         #expect(selectionToTable("a\tb\tc")?.hasPrefix("\\begin{tabular}{lll}") == true)

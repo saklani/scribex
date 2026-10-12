@@ -132,6 +132,7 @@ struct Palette: View {
     }
 
     private func move(_ by: Int, in rows: [PaletteRow]) {
+        guard !rows.isEmpty else { return }
         let index = rows.firstIndex { $0.id == active } ?? -1
         active = rows[max(0, min(rows.count - 1, index + by))].id
     }

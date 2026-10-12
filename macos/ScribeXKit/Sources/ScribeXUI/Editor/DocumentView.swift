@@ -32,9 +32,9 @@ public struct DocumentView: View {
     @Environment(\.dismissWindow) private var dismissWindow
 
     public init(document: TexDocument, fileURL: URL?, engine: Engine) {
-        let session = Session(document: document, engine: engine)
-        session.fileURL = fileURL
-        _session = State(initialValue: session)
+        // Runs on every update of the scene, and all but the first session are
+        // thrown away: it is given its file, which starts a build, once it appears.
+        _session = State(initialValue: Session(document: document, engine: engine))
         self.fileURL = fileURL
     }
 
@@ -90,7 +90,10 @@ public struct DocumentView: View {
         .onChange(of: session.engine.cache) { _, cache in
             if cache == .ready { session.typesetting.build() }
         }
-        .onAppear { session.typesetting.scheduleBuild() }
+        .onAppear {
+            session.fileURL = fileURL
+            session.typesetting.scheduleBuild()
+        }
         .background(WindowProbe { window in
             // A document is open; the welcome window has done its job.
             // If it was full screen, this window takes its place there.

@@ -21,6 +21,19 @@ public struct Suggestion: Hashable, Sendable, Identifiable {
     public var words: [String]
 }
 
+/// What inserting `snippet` over `selection` puts in the document, and how far
+/// into it the caret lands (in UTF-16 units, as the editor counts): at the
+/// marker, or at the end without one. A marker with text after it, as in
+/// `\textbf{‸}`, is room for the selection, which is kept there rather than
+/// replaced, with the caret after it.
+public func insertion(of snippet: String, over selection: String = "") -> (text: String, caret: Int) {
+    let text = snippet as NSString
+    let marker = text.range(of: caret)
+    guard marker.location != NSNotFound else { return (snippet, text.length) }
+    let kept = NSMaxRange(marker) < text.length ? selection : ""
+    return (text.replacingCharacters(in: marker, with: kept), marker.location + (kept as NSString).length)
+}
+
 private struct Query: Sendable {
     var words: [String]
     /// First two integers in the query, e.g. "3 by 4" → [3, 4].

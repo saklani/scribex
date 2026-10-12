@@ -19,15 +19,13 @@ public final class EditorHandle {
     }
 
     /// A `caret` marker in `text` sets where the caret lands; otherwise it lands
-    /// after the insertion.
+    /// after the insertion. Selected text is wrapped or replaced: see `insertion`.
     func insert(_ text: String) {
         guard let view else { return }
-        let marker = (text as NSString).range(of: caret)
-        let clean = text.replacingOccurrences(of: caret, with: "")
         let at = view.textSelection
-        view.replaceCharacters(in: at, with: clean)
-        let landing = marker.location == NSNotFound ? (clean as NSString).length : marker.location
-        view.textSelection = NSRange(location: at.location + landing, length: 0)
+        let placed = insertion(of: text, over: selectedText)
+        view.replaceCharacters(in: at, with: placed.text)
+        view.textSelection = NSRange(location: at.location + placed.caret, length: 0)
         view.scrollRangeToVisible(view.textSelection)
         focus()
     }

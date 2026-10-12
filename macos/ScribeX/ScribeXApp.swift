@@ -26,6 +26,10 @@ struct ScribeXApp: App {
         DocumentGroup(newDocument: { TexDocument() }) { file in
             DocumentView(document: file.document, fileURL: file.fileURL, engine: engine)
                 .environment(engine)
+                // Revert and Versions hand over a new document object. The window
+                // starts over on it, or the editor would go on showing the old one
+                // and typing into it, while saves wrote the new.
+                .id(ObjectIdentifier(file.document))
         }
         .defaultSize(width: 1280, height: 820)
         .defaultLaunchBehavior(.suppressed)

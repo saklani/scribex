@@ -11,7 +11,7 @@ import SwiftUI
 ///
 /// Steps: `snap NAME`, `wait SECONDS`, `size WIDTH HEIGHT`, `fullscreen`, `new`, `open PATH`,
 /// `run COMMAND-ID`, `palette TEXT`, `close`, `type TEXT`, `key TEXT`, `page NAME`, `fetch`,
-/// `essentials`, `save`, `undo`, `menus`, `state LABEL`, `quit`. `run` takes an
+/// `essentials`, `save`, `revert`, `undo`, `menus`, `state LABEL`, `quit`. `run` takes an
 /// id from `Command.all`, e.g. `run issues`.
 public enum DebugScript {
     public static func runIfRequested() {
@@ -122,6 +122,11 @@ public enum DebugScript {
                 sv.reflectScrolledClipView(clip)
             }
         case "save": NSDocumentController.shared.documents.first?.save(nil)
+        case "revert":
+            // File ▸ Revert To ▸ Last Saved, without its confirmation.
+            if let document = NSDocumentController.shared.documents.first, let url = document.fileURL, let type = document.fileType {
+                try? document.revert(toContentsOf: url, ofType: type)
+            }
         case "undo": NSDocumentController.shared.documents.first?.undoManager?.undo()
         case "quit": NSApp.terminate(nil)
         default: print("debug script: unknown step \(verb)")
